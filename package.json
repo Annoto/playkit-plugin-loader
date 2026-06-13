@@ -1,0 +1,29 @@
+{
+  "name": "playkit-js-annoto",
+  "version": "0.1.0",
+  "description": "Thin Kaltura Player v7 (Playkit) wrapper plugin that loads the Annoto plugin so Annoto can be enabled via a Kaltura uiConf — including the IFrame embed. Anonymous-only.",
+  "main": "dist/playkit-js-annoto.js",
+  "scripts": {
+    "build": "webpack --mode production",
+    "dev": "webpack serve --mode development",
+    "serve:demo": "http-server -p 8080 -c-1 ."
+  },
+  "keywords": [
+    "kaltura",
+    "playkit",
+    "playkit-js",
+    "annoto",
+    "plugin",
+    "video"
+  ],
+  "license": "MIT",
+  "peerDependencies": {
+    "kaltura-player-js": "*"
+  },
+  "devDependencies": {
+    "http-server": "^14.1.1",
+    "webpack": "^5.0.0",
+    "webpack-cli": "^5.0.0",
+    "webpack-dev-server": "^4.0.0"
+  }
+}
