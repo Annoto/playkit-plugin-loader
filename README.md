@@ -88,17 +88,80 @@ uiConf bundle:
    npm run build      # -> dist/playkit-js-annoto.js
    ```
 
-2. Host `dist/playkit-js-annoto.js`, and register it in a Kaltura uiConf /
-   Player Studio so it's loaded with the player, with the `annotoLoader` plugin
-   config above set in the uiConf.
+2. Host `dist/playkit-js-annoto.js` on a public HTTPS URL (any CDN).
 
-3. Generate the **IFrame (auto) embed** for that uiConf and drop it on any
-   external site. Annoto should now load inside the iframe with no extra script.
+3. Add it to a v7 player in **Player Studio** (steps below).
+
+4. Generate the **IFrame (auto) embed** for that player and drop it on any
+   external site. Annoto loads inside the iframe with no extra script.
+
+## Player Studio (KMC) uiConf setup
+
+These steps add the plugin to a TV Platform Studio (v7) player and configure it.
+Open the **KMC → Studio** tab (`https://kmc.kaltura.com/index.php/kmcng/studio/v3`)
+and use the **TV Platform Studio** (a.k.a. Player V7). If you don't see that tab,
+ask your Kaltura account manager to enable it.
+
+### A. Configure the plugin (uiConf advanced settings)
+
+This is the part you can do yourself today.
+
+1. In Studio, **Add New Player** (or pick an existing v7 player) and give it a
+   name.
+2. Open the player's **config / advanced settings** (the raw uiConf JSON editor —
+   in the left sidebar, the option that lets you edit the player config file).
+3. Add an `annotoLoader` entry to the `plugins` object:
+
+   ```json
+   {
+     "plugins": {
+       "annotoLoader": {
+         "clientId": "eyJhbGciOiJIUzI1NiJ9...",
+         "region": "eu"
+       }
+     }
+   }
+   ```
+
+   `clientId` is your Annoto API key; `region` is `eu` / `us` / `staging`.
+4. **Save** the player. Note its **Player ID** (this is the **uiConfId**) from the
+   ID column in the player list.
+
+### B. Get the plugin code loaded with the player
+
+Configuration alone (step A) only tells the player *how* to configure
+`annotoLoader` — the player also has to actually *load* the plugin code. There
+are two ways, depending on your Kaltura setup:
+
+- **Kaltura SaaS (cloud KMC):** the v7 bundler only includes plugins Kaltura has
+  registered/whitelisted, so a self-hosted custom bundle is **not** pulled into
+  the iframe build automatically. To enable the true IFrame embed on SaaS, ask
+  Kaltura (via your account manager / Kaltura PS) to **whitelist and include this
+  plugin** in the player bundler, pointing at your hosted
+  `dist/playkit-js-annoto.js`. This is the same "whitelist Annoto" ask raised in
+  the original thread — this repo is the artifact that request points to.
+- **Self-hosted / on-prem Kaltura:** add the plugin to your player **bundler
+  config** so `dist/playkit-js-annoto.js` is built into the uiConf bundle. Once
+  it's in the bundle, the IFrame embed works with no host-page script.
+
+> Until B is done on SaaS, you can still ship Annoto on every embed type **except
+> the bare IFrame** using Annoto's standard host-page script setup, or use the
+> **dynamic embed** with the plugin registered on the page (what the local demo
+> does). The IFrame-without-host-script case is specifically what step B unlocks.
+
+### C. Generate the embed and verify
+
+1. In **KMC → Content**, pick an entry → **Share & Embed**.
+2. Select your v7 player at the top.
+3. Choose **Auto Embed** (the iframe embed) in advanced settings and copy the
+   code.
+4. Paste it on any external page and confirm the Annoto widget loads inside the
+   iframe and is functional (anonymous comments, etc.).
 
 > The cleanest long-term outcome is for Annoto (or Kaltura PS) to publish this
 > wrapper and for Kaltura to whitelist it as a built-in Player Studio plugin, so
-> customers can toggle Annoto on without manual uiConf work. This package is the
-> proof-of-concept / testing artifact for that.
+> customers can toggle Annoto on without any manual uiConf work. This package is
+> the proof-of-concept / testing artifact for that.
 
 ## Open-sourcing
 
