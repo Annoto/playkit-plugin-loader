@@ -52,8 +52,6 @@ runtime. If Annoto/Kaltura adopt this wrapper directly, the name can become
 
 ## Test it locally (localhost:8080)
 
-This is the part Muli couldn't do without a working API key.
-
 1. Serve this folder on port 8080 (the demo uses `:8080` by convention):
 
    ```bash
@@ -165,8 +163,7 @@ are two ways, depending on your Kaltura setup:
 
 ## Open-sourcing
 
-MIT-licensed, intended to live under the **Kaltura-PS** organization (as Muli
-suggested) or Annoto's org.
+MIT-licensed, intended to live under the Annoto's org.
 
 ## Files
 
@@ -179,7 +176,7 @@ demo/index.html      Zero-build localhost:8080 test page
 
 ## Known limitations / notes
 
-- **Anonymous-only.** No SSO. Per-user identity inside an IFrame embed is a
+- Anonymous or OAuth or Sign in via Email- No SSO. Per-user identity inside an IFrame embed is a
   separate design problem (passing a user JWT into the iframe) and is out of
   scope here.
 - The wrapper relies on Annoto's documented auto-boot globals. If the demo shows
