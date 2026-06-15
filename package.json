@@ -1,6 +1,7 @@
 {
-  "name": "playkit-plugin-loader",
+  "name": "@annoto/playkit-plugin-loader",
   "version": "0.1.0",
+  "private": true,
   "description": "Thin Kaltura Player v7 (Playkit) wrapper plugin (annoto-loader) that loads the Annoto plugin so Annoto can be enabled via a Kaltura uiConf — including the IFrame embed. Anonymous-only.",
   "main": "dist/playkit-plugin-loader.js",
   "scripts": {
