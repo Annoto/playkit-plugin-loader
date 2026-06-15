@@ -23,8 +23,10 @@ interface AnnotoWindow extends Window {
  * the player bundle, so Annoto loads even in the IFrame embed with no host-page
  * script.
  *
- * Scope: anonymous-only (no SSO). Configuration is passed through the player
- * `plugins` config (KMC Player Studio advanced settings).
+ * Authentication (Anonymous, OAuth/social, or Email login) is handled by the
+ * Annoto widget per your clientId (configured in the Annoto dashboard).
+ * Configuration is passed through the player `plugins` config (KMC Player Studio
+ * advanced settings).
  *
  * Uses only Annoto's public surface (plugin.js + the NN_PLAYKIT_* globals), so
  * it keeps working as Annoto ships updates to plugin.js.
@@ -53,7 +55,7 @@ export class AnnotoLoader extends BasePlugin {
       return;
     }
 
-    // Set the documented Annoto auto-boot globals (anonymous-only path).
+    // Set the documented Annoto auto-boot globals.
     // plugin.js picks these up and boots the widget bound to the player on page.
     const w = window as AnnotoWindow;
     w.NN_PLAYKIT_AUTO_BOOT = true;

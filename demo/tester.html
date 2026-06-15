@@ -1,0 +1,169 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Annoto Loader — interactive tester</title>
+    <style>
+      body { font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif; margin: 0; background: #f6f7f9; color: #1d2129; }
+      header { background: #fff; border-bottom: 1px solid #e5e7eb; padding: 16px 24px; }
+      header h1 { font-size: 18px; margin: 0; }
+      main { max-width: 860px; margin: 24px auto; padding: 0 16px; }
+      .card { background: #fff; border: 1px solid #e5e7eb; border-radius: 10px; padding: 20px; margin-bottom: 20px; }
+      label { display: block; font-size: 13px; font-weight: 600; margin: 10px 0 4px; }
+      input { width: 100%; box-sizing: border-box; padding: 9px 10px; border: 1px solid #cbd2d9; border-radius: 7px; font-size: 13px; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
+      .row { display: flex; gap: 12px; }
+      .row > div { flex: 1; }
+      button { margin-top: 14px; background: #ea5451; color: #fff; border: 0; border-radius: 7px; padding: 10px 18px; font-size: 14px; font-weight: 600; cursor: pointer; }
+      button:hover { background: #d8403d; }
+      #annoto_kaltura_player { width: 100%; max-width: 760px; aspect-ratio: 16 / 9; background: #000; margin-top: 8px; }
+      .hint { font-size: 12px; color: #6b7280; margin-top: 6px; }
+      code { background: #eef0f3; padding: 1px 5px; border-radius: 4px; font-size: 12px; }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>Annoto Loader — interactive tester</h1>
+    </header>
+
+    <main>
+      <div class="card">
+        <p style="margin-top: 0">
+          Self-contained tester for the <code>annoto-loader</code> plugin. It registers the
+          plugin and enables it purely through the player <code>plugins</code> config — there is
+          <strong>no host-page Annoto script</strong>, mirroring how a uiConf-bundled plugin
+          behaves inside the Kaltura IFrame embed.
+        </p>
+
+        <label>Annoto API key (clientId, JWT) — required</label>
+        <input id="clientId" placeholder="eyJhbGciOiJIUzI1NiJ9..." />
+        <p class="hint">
+          The sign-in methods shown (Anonymous, OAuth/social, Email login) are whatever is
+          configured for this clientId in the Annoto dashboard.
+        </p>
+
+        <div class="row">
+          <div>
+            <label>Region</label>
+            <input id="region" value="eu" />
+          </div>
+          <div>
+            <label>Kaltura partnerId</label>
+            <input id="partnerId" value="2302901" />
+          </div>
+        </div>
+        <div class="row">
+          <div>
+            <label>Kaltura uiConfId</label>
+            <input id="uiConfId" value="56503472" />
+          </div>
+          <div>
+            <label>Entry ID</label>
+            <input id="entryId" value="1_40h65is7" />
+          </div>
+        </div>
+
+        <button id="load">Load player + Annoto</button>
+        <p class="hint">Defaults point at Annoto's Kaltura test player. Replace with your own to test your account.</p>
+      </div>
+
+      <div class="card">
+        <div id="annoto_kaltura_player"></div>
+      </div>
+    </main>
+
+    <!--
+      The annoto-loader plugin, inlined so this page works standalone (no build
+      needed). It is the same logic as src/annoto-loader.ts; the production
+      artifact is the built dist/playkit-plugin-loader.js bundle.
+    -->
+    <script>
+      (function () {
+        var DEFAULT_SCRIPT_URL = 'https://cdn.annoto.net/playkit-plugin/latest/plugin.js';
+        var PLUGIN_NAME = 'annoto-loader';
+
+        window.__registerAnnotoLoader = function () {
+          if (typeof KalturaPlayer === 'undefined' || !KalturaPlayer.core) return false;
+          var BasePlugin = KalturaPlayer.core.BasePlugin;
+
+          function AnnotoLoader(name, player, config) {
+            BasePlugin.call(this, name, player, config);
+            this._loadAnnoto();
+          }
+          AnnotoLoader.prototype = Object.create(BasePlugin.prototype);
+          AnnotoLoader.prototype.constructor = AnnotoLoader;
+
+          AnnotoLoader.defaultConfig = { clientId: '', region: 'eu', theme: '', scriptUrl: DEFAULT_SCRIPT_URL };
+          AnnotoLoader.isValid = function () { return true; };
+
+          AnnotoLoader.prototype.loadMedia = function () { this._loadAnnoto(); };
+          AnnotoLoader.prototype._loadAnnoto = function () {
+            var cfg = this.config || {};
+            if (!cfg.clientId) { this.logger.warn('Annoto: missing clientId — will not boot.'); return; }
+            var w = window;
+            w.NN_PLAYKIT_AUTO_BOOT = true;
+            w.NN_PLAYKIT_API_KEY = cfg.clientId;
+            if (cfg.region) w.NN_PLAYKIT_REGION = cfg.region;
+            if (cfg.theme) w.NN_PLAYKIT_THEME = cfg.theme;
+            if (w.__annotoPlaykitScriptInjected) return;
+            w.__annotoPlaykitScriptInjected = true;
+            var url = cfg.scriptUrl || DEFAULT_SCRIPT_URL;
+            var s = document.createElement('script');
+            s.src = url;
+            s.async = true;
+            s.onload = function () { console.log('[annoto-loader] plugin.js loaded'); };
+            s.onerror = function () {
+              w.__annotoPlaykitScriptInjected = false;
+              console.error('[annoto-loader] failed to load plugin.js');
+            };
+            (document.head || document.documentElement).appendChild(s);
+          };
+          AnnotoLoader.prototype.reset = function () {};
+          AnnotoLoader.prototype.destroy = function () {};
+
+          KalturaPlayer.core.registerPlugin(PLUGIN_NAME, AnnotoLoader);
+          return true;
+        };
+      })();
+    </script>
+
+    <script>
+      document.getElementById('load').addEventListener('click', function () {
+        var clientId = document.getElementById('clientId').value.trim();
+        var region = document.getElementById('region').value.trim() || 'eu';
+        var partnerId = parseInt(document.getElementById('partnerId').value.trim(), 10);
+        var uiConfId = parseInt(document.getElementById('uiConfId').value.trim(), 10);
+        var entryId = document.getElementById('entryId').value.trim();
+
+        if (!clientId) { alert('Enter your Annoto API key (clientId) first.'); return; }
+
+        // Load the Kaltura Player v7 bundle for the chosen partner/uiConf, then
+        // register the plugin and set up the player with it configured.
+        var kalturaJs = 'https://cdnapisec.kaltura.com/p/' + partnerId + '/embedPlaykitJs/uiconf_id/' + uiConfId;
+        var s = document.createElement('script');
+        s.src = kalturaJs;
+        s.onload = function () {
+          if (!window.__registerAnnotoLoader()) {
+            console.error('KalturaPlayer not available after load.');
+            return;
+          }
+          try {
+            var kp = KalturaPlayer.setup({
+              targetId: 'annoto_kaltura_player',
+              provider: { partnerId: partnerId, uiConfId: uiConfId },
+              plugins: {
+                'annoto-loader': { clientId: clientId, region: region }
+              }
+            });
+            kp.loadMedia({ entryId: entryId });
+          } catch (e) {
+            console.error(e.message);
+            alert('Player setup failed: ' + e.message);
+          }
+        };
+        s.onerror = function () { alert('Failed to load Kaltura player bundle. Check partnerId / uiConfId.'); };
+        document.head.appendChild(s);
+      });
+    </script>
+  </body>
+</html>

@@ -4,7 +4,10 @@ A thin **Kaltura Player v7 (Playkit)** plugin — `annoto-loader` — that loads
 Annoto's hosted bundle and boots it through the player. Written in TypeScript,
 structured after the [Kaltura-PS plugin template](https://github.com/Kaltura-PS/playkit-js-plugin-example).
 
-**Scope: anonymous-only** (no SSO / per-user login).
+**Authentication:** supports **Anonymous**, **OAuth** (social authentication such
+as Google, Facebook, etc.), and **Email Login** (sign in via email and password,
+or OAuth if enabled). Auth methods are configured for your Annoto `clientId` in
+the Annoto dashboard.
 
 ## Why this exists
 
@@ -67,6 +70,14 @@ npm run prettier     # format
 npm run clean        # remove dist/ and lib/
 ```
 
+### Demo pages
+
+- `demo/index.html` — minimal static demo (template style); set your API key in
+  the page source. Served by `npm run serve`.
+- `demo/tester.html` — self-contained interactive tester: fill in your Annoto API
+  key, Kaltura partner/uiConf/entry, and load. No build required — open it via any
+  static server (e.g. `npx http-server demo -p 8080` → `/tester.html`).
+
 ## Kaltura Player Studio (uiConf) setup
 
 1. **Configure** — in KMC → TV Platform Studio (v7), open the player's advanced
@@ -110,8 +121,10 @@ demo/index.html                    Local demo page
 
 ## Known limitations / notes
 
-- **Anonymous-only.** No SSO. Per-user identity inside an IFrame embed (passing
-  a user JWT in) is a separate design problem and out of scope here.
+- **Authentication** is handled by the Annoto widget itself — **Anonymous**,
+  **OAuth** (social: Google, Facebook, etc.), or **Email Login** (email/password,
+  or OAuth if enabled) — configured for your `clientId` in the Annoto dashboard.
+  The host page does not need to pass a per-user token.
 - The loader relies on Annoto's documented auto-boot globals. If the demo shows
   the player but not the Annoto widget, check the browser console — it logs
   whether `plugin.js` loaded — and share it so the boot timing can be adjusted.
