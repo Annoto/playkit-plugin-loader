@@ -2,29 +2,64 @@
   "name": "@annoto/playkit-plugin-loader",
   "version": "0.1.0",
   "private": true,
-  "description": "Thin Kaltura Player v7 (Playkit) wrapper plugin (annoto-loader) that loads the Annoto plugin so Annoto can be enabled via a Kaltura uiConf — including the IFrame embed. Anonymous-only.",
+  "description": "Thin Kaltura Player v7 (Playkit) plugin (annoto-loader) that loads the Annoto plugin so Annoto can be enabled via a Kaltura uiConf — including the IFrame embed. Anonymous-only.",
   "main": "dist/playkit-plugin-loader.js",
-  "scripts": {
-    "build": "webpack --mode production",
-    "dev": "webpack serve --mode development",
-    "serve:demo": "http-server -p 8080 -c-1 ."
+  "typings": "dist/index.d.ts",
+  "files": [
+    "dist/**/*",
+    "src/**/*"
+  ],
+  "license": "MIT",
+  "homepage": "https://github.com/Annoto/playkit-plugin-loader",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Annoto/playkit-plugin-loader"
   },
   "keywords": [
     "kaltura",
+    "kaltura-player",
     "playkit",
     "playkit-js",
     "annoto",
-    "plugin",
-    "video"
+    "plugin"
   ],
-  "license": "MIT",
+  "scripts": {
+    "serve": "webpack serve --open --mode development",
+    "watch": "webpack --mode development --watch",
+    "build:prod": "webpack --mode production",
+    "build:types": "tsc --build tsconfig-lib.json && mkdir -p lib && api-extractor run --local",
+    "build": "npm run build:prod && npm run build:types",
+    "type-check": "tsc --noEmit",
+    "type-check:watch": "npm run type-check -- --watch",
+    "lint": "eslint src/ --ext .js --ext .ts",
+    "lint:fix": "npm run lint -- --fix",
+    "prettier": "prettier --write .",
+    "clean": "rimraf ./dist ./lib",
+    "prebuild": "npm run clean"
+  },
   "peerDependencies": {
-    "kaltura-player-js": "*"
+    "@playkit-js/kaltura-player-js": "*"
   },
   "devDependencies": {
-    "http-server": "^14.1.1",
-    "webpack": "^5.107.2",
+    "@babel/core": "^7.23.7",
+    "@babel/plugin-proposal-decorators": "^7.23.7",
+    "@babel/plugin-transform-runtime": "^7.23.7",
+    "@babel/preset-env": "^7.23.8",
+    "@babel/preset-typescript": "^7.23.3",
+    "@babel/runtime": "^7.23.8",
+    "@microsoft/api-extractor": "^7.39.1",
+    "@playkit-js/kaltura-player-js": "^3.17.9-canary.0-0c8731f",
+    "@typescript-eslint/eslint-plugin": "^6.19.0",
+    "@typescript-eslint/parser": "^6.19.0",
+    "babel-loader": "^9.1.3",
+    "eslint": "^8.56.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-prettier": "^5.1.3",
+    "prettier": "^3.2.2",
+    "rimraf": "^5.0.5",
+    "typescript": "^5.3.3",
+    "webpack": "^5.89.0",
     "webpack-cli": "^5.1.4",
-    "webpack-dev-server": "^4.0.0"
+    "webpack-dev-server": "^4.15.1"
   }
 }

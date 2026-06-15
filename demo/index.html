@@ -2,179 +2,49 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Annoto × Kaltura Playkit v7 — wrapper plugin demo</title>
-    <style>
-      body { font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif; margin: 0; background: #f6f7f9; color: #1d2129; }
-      header { background: #fff; border-bottom: 1px solid #e5e7eb; padding: 16px 24px; }
-      header h1 { font-size: 18px; margin: 0; }
-      main { max-width: 860px; margin: 24px auto; padding: 0 16px; }
-      .card { background: #fff; border: 1px solid #e5e7eb; border-radius: 10px; padding: 20px; margin-bottom: 20px; }
-      label { display: block; font-size: 13px; font-weight: 600; margin: 10px 0 4px; }
-      input { width: 100%; box-sizing: border-box; padding: 9px 10px; border: 1px solid #cbd2d9; border-radius: 7px; font-size: 13px; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
-      .row { display: flex; gap: 12px; }
-      .row > div { flex: 1; }
-      button { margin-top: 14px; background: #ea5451; color: #fff; border: 0; border-radius: 7px; padding: 10px 18px; font-size: 14px; font-weight: 600; cursor: pointer; }
-      button:hover { background: #d8403d; }
-      #player-wrap { margin-top: 8px; }
-      #annoto_kaltura_player { width: 100%; max-width: 760px; aspect-ratio: 16 / 9; background: #000; }
-      .hint { font-size: 12px; color: #6b7280; margin-top: 6px; }
-      code { background: #eef0f3; padding: 1px 5px; border-radius: 4px; font-size: 12px; }
-    </style>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Annoto Loader — Playkit v7 plugin demo</title>
+    <!-- Kaltura Player (v7) -->
+    <script src="https://unpkg.com/@playkit-js/kaltura-player-js@canary/dist/kaltura-ovp-player.js"></script>
+    <!-- The built plugin bundle (served at the root by webpack-dev-server) -->
+    <script src="../playkit-plugin-loader.js"></script>
   </head>
   <body>
-    <header>
-      <h1>Annoto × Kaltura Playkit v7 — wrapper plugin demo</h1>
-    </header>
-
-    <main>
-      <div class="card">
-        <p style="margin-top:0">
-          This page proves the wrapper works the way a <strong>uiConf-bundled</strong> plugin would:
-          Annoto is enabled purely through the player <code>plugins</code> config — there is
-          <strong>no host-page Annoto script tag</strong>. The wrapper (registered below) loads
-          <code>plugin.js</code> from inside the player. This is the same path that runs inside the
-          Kaltura IFrame embed once the plugin is bundled into a uiConf.
-        </p>
-
-        <label>Annoto API key (clientId, JWT) — required</label>
-        <input id="clientId" placeholder="eyJhbGciOiJIUzI1NiJ9..." />
-        <p class="hint">Anonymous-only: just the API key, no user login/SSO.</p>
-
-        <div class="row">
-          <div>
-            <label>Region</label>
-            <input id="region" value="eu" />
-          </div>
-          <div>
-            <label>Kaltura partnerId</label>
-            <input id="partnerId" value="2302901" />
-          </div>
-        </div>
-        <div class="row">
-          <div>
-            <label>Kaltura uiConfId</label>
-            <input id="uiConfId" value="56503472" />
-          </div>
-          <div>
-            <label>Entry ID</label>
-            <input id="entryId" value="1_40h65is7" />
-          </div>
-        </div>
-
-        <button id="load">Load player + Annoto</button>
-        <p class="hint">Defaults point at Annoto's Kaltura test partner. Replace with your own to test your account.</p>
-      </div>
-
-      <div class="card">
-        <div id="player-wrap">
-          <div id="annoto_kaltura_player"></div>
-        </div>
-      </div>
-    </main>
-
-    <!--
-      The wrapper plugin, inlined for a zero-build local test.
-      In production this same logic is the built dist/playkit-plugin-loader.js bundle,
-      referenced from your Kaltura uiConf so it runs inside the IFrame embed.
-    -->
+    <div id="player-placeholder" style="width: 640px; height: 360px"></div>
     <script>
-      (function () {
-        var DEFAULT_SCRIPT_URL = 'https://cdn.annoto.net/playkit-plugin/latest/plugin.js';
-        var PLUGIN_NAME = 'annoto-loader';
+      // Anonymous-only: set your Annoto API key (clientId) below to see the
+      // Annoto widget load. The plugin is enabled purely via the `plugins`
+      // config — there is NO Annoto <script> on this page, which mirrors how a
+      // uiConf-bundled plugin behaves inside the Kaltura IFrame embed.
+      const ANNOTO_API_KEY = 'PUT_YOUR_ANNOTO_API_KEY_HERE';
 
-        function defineAndRegister() {
-          if (typeof KalturaPlayer === 'undefined' || !KalturaPlayer.core) return false;
-          var BasePlugin = KalturaPlayer.core.BasePlugin;
-
-          function Annoto(name, player, config) {
-            BasePlugin.call(this, name, player, config);
-            this._loadAnnoto();
+      const config = {
+        logLevel: 'DEBUG',
+        targetId: 'player-placeholder',
+        provider: {},
+        playback: {
+          autoplay: true
+        },
+        plugins: {
+          'annoto-loader': {
+            clientId: ANNOTO_API_KEY,
+            region: 'eu'
           }
-          Annoto.prototype = Object.create(BasePlugin.prototype);
-          Annoto.prototype.constructor = Annoto;
-
-          Annoto.defaultConfig = {
-            clientId: '',
-            region: 'eu',
-            theme: '',
-            scriptUrl: DEFAULT_SCRIPT_URL
-          };
-          Annoto.isValid = function () { return true; };
-
-          Annoto.prototype._loadAnnoto = function () {
-            var cfg = this.config || {};
-            if (!cfg.clientId) {
-              this.logger.warn('Annoto: missing clientId — will not boot.');
-              return;
-            }
-            var w = window;
-            w.NN_PLAYKIT_AUTO_BOOT = true;
-            w.NN_PLAYKIT_API_KEY = cfg.clientId;
-            if (cfg.region) w.NN_PLAYKIT_REGION = cfg.region;
-            if (cfg.theme) w.NN_PLAYKIT_THEME = cfg.theme;
-
-            if (w.__annotoPlaykitScriptInjected) return;
-            w.__annotoPlaykitScriptInjected = true;
-
-            var url = cfg.scriptUrl || DEFAULT_SCRIPT_URL;
-            var s = document.createElement('script');
-            s.src = url;
-            s.async = true;
-            s.onload = function () { console.log('[annoto-loader] plugin.js loaded'); };
-            s.onerror = function () {
-              w.__annotoPlaykitScriptInjected = false;
-              console.error('[annoto-loader] failed to load plugin.js');
-            };
-            (document.head || document.documentElement).appendChild(s);
-          };
-          Annoto.prototype.reset = function () {};
-          Annoto.prototype.destroy = function () {};
-
-          KalturaPlayer.core.registerPlugin(PLUGIN_NAME, Annoto);
-          return true;
         }
+      };
 
-        window.__registerAnnotoLoader = defineAndRegister;
-      })();
-    </script>
+      const player = KalturaPlayer.setup(config);
 
-    <script>
-      document.getElementById('load').addEventListener('click', function () {
-        var clientId = document.getElementById('clientId').value.trim();
-        var region = document.getElementById('region').value.trim() || 'eu';
-        var partnerId = parseInt(document.getElementById('partnerId').value.trim(), 10);
-        var uiConfId = parseInt(document.getElementById('uiConfId').value.trim(), 10);
-        var entryId = document.getElementById('entryId').value.trim();
-
-        if (!clientId) { alert('Enter your Annoto API key (clientId) first.'); return; }
-
-        // Load the Kaltura Player v7 bundle for the chosen partner/uiConf, then
-        // register the wrapper plugin and set up the player with it configured.
-        var kalturaJs = 'https://cdnapisec.kaltura.com/p/' + partnerId + '/embedPlaykitJs/uiconf_id/' + uiConfId;
-        var s = document.createElement('script');
-        s.src = kalturaJs;
-        s.onload = function () {
-          if (!window.__registerAnnotoLoader()) {
-            console.error('KalturaPlayer not available after load.');
-            return;
-          }
-          try {
-            var kp = KalturaPlayer.setup({
-              targetId: 'annoto_kaltura_player',
-              provider: { partnerId: partnerId, uiConfId: uiConfId },
-              plugins: {
-                'annoto-loader': { clientId: clientId, region: region }
-              }
-            });
-            kp.loadMedia({ entryId: entryId });
-          } catch (e) {
-            console.error(e.message);
-            alert('Player setup failed: ' + e.message);
-          }
-        };
-        s.onerror = function () { alert('Failed to load Kaltura player bundle. Check partnerId / uiConfId.'); };
-        document.head.appendChild(s);
+      player.setMedia({
+        sources: {
+          hls: [
+            {
+              id: '1_ebs5e9cy_19201,applehttp',
+              url: 'https://cdnapisec.kaltura.com/p/2215841/sp/221584100/playManifest/entryId/1_ebs5e9cy/protocol/https/format/applehttp/a.m3u8',
+              mimetype: 'application/x-mpegURL'
+            }
+          ]
+        }
       });
     </script>
   </body>
