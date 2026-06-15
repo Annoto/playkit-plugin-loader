@@ -9,7 +9,7 @@
     "dist/**/*",
     "src/**/*"
   ],
-  "license": "GPL-3.0-only",
+  "license": "AGPL-3.0-only",
   "homepage": "https://github.com/Annoto/playkit-plugin-loader",
   "repository": {
     "type": "git",

@@ -118,4 +118,4 @@ demo/index.html                    Local demo page
 
 ## License
 
-GNU General Public License v3.0 (GPL-3.0) — see [LICENSE](LICENSE).
+GNU Affero General Public License v3.0 (AGPL-3.0) — matching the Kaltura-PS plugin template. See [LICENSE](LICENSE).
