@@ -156,10 +156,19 @@ are two ways, depending on your Kaltura setup:
 4. Paste it on any external page and confirm the Annoto widget loads inside the
    iframe and is functional (anonymous comments, etc.).
 
-> The cleanest long-term outcome is for Annoto (or Kaltura PS) to publish this
+> The cleanest long-term outcome is for Annoto (or Kaltura PS) to ship this
 > wrapper and for Kaltura to whitelist it as a built-in Player Studio plugin, so
 > customers can toggle Annoto on without any manual uiConf work. This package is
 > the proof-of-concept / testing artifact for that.
+
+## Distribution
+
+This package is **`private`** and **not published to npm** (scoped `@annoto/` to
+reserve the name). Like Annoto's `plugin.js`, it's distributed as the **built
+bundle hosted on the Annoto CDN**, not as an installable npm package. So the
+deliverable is `dist/playkit-plugin-loader.js` — build it (`npm run build`) and
+host that file; reference the hosted URL from the Kaltura uiConf / bundler.
+`npm install` is only for local development and building.
 
 ## Open-sourcing
 
