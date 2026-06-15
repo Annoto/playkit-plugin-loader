@@ -75,13 +75,13 @@
 
     <!--
       The wrapper plugin, inlined for a zero-build local test.
-      In production this same logic is the built dist/playkit-js-annoto.js bundle,
+      In production this same logic is the built dist/playkit-plugin-loader.js bundle,
       referenced from your Kaltura uiConf so it runs inside the IFrame embed.
     -->
     <script>
       (function () {
         var DEFAULT_SCRIPT_URL = 'https://cdn.annoto.net/playkit-plugin/latest/plugin.js';
-        var PLUGIN_NAME = 'annotoLoader';
+        var PLUGIN_NAME = 'annoto-loader';
 
         function defineAndRegister() {
           if (typeof KalturaPlayer === 'undefined' || !KalturaPlayer.core) return false;
@@ -121,10 +121,10 @@
             var s = document.createElement('script');
             s.src = url;
             s.async = true;
-            s.onload = function () { console.log('[annotoLoader] plugin.js loaded'); };
+            s.onload = function () { console.log('[annoto-loader] plugin.js loaded'); };
             s.onerror = function () {
               w.__annotoPlaykitScriptInjected = false;
-              console.error('[annotoLoader] failed to load plugin.js');
+              console.error('[annoto-loader] failed to load plugin.js');
             };
             (document.head || document.documentElement).appendChild(s);
           };
@@ -164,7 +164,7 @@
               targetId: 'annoto_kaltura_player',
               provider: { partnerId: partnerId, uiConfId: uiConfId },
               plugins: {
-                annotoLoader: { clientId: clientId, region: region }
+                'annoto-loader': { clientId: clientId, region: region }
               }
             });
             kp.loadMedia({ entryId: entryId });

@@ -3,16 +3,16 @@ import { Annoto } from './annoto';
 /**
  * Plugin name used in the player `plugins` config and in the uiConf.
  *
- * NOTE: this is intentionally `annotoLoader` rather than `annoto` to avoid any
+ * NOTE: this is intentionally `annoto-loader` rather than `annoto` to avoid any
  * registration clash with the `annoto` plugin that Annoto's own plugin.js may
  * register at runtime. Configure it as:
  *
- *   plugins: { annotoLoader: { clientId: 'eyJ...', region: 'eu' } }
+ *   plugins: { 'annoto-loader': { clientId: 'eyJ...', region: 'eu' } }
  *
  * If/when this wrapper is adopted/bundled by Annoto or Kaltura directly, the
  * name can be changed to `annoto`.
  */
-const PLUGIN_NAME = 'annotoLoader';
+const PLUGIN_NAME = 'annoto-loader';
 
 function registerAnnoto() {
   const register =

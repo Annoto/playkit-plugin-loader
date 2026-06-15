@@ -2,7 +2,7 @@ const path = require('path');
 
 /**
  * Builds a UMD bundle that self-registers the plugin with the Kaltura player.
- * The output (dist/playkit-js-annoto.js) is what you host and reference from a
+ * The output (dist/playkit-plugin-loader.js) is what you host and reference from a
  * Kaltura uiConf so the plugin is part of the player bundle (and therefore runs
  * inside the IFrame embed).
  *
@@ -13,8 +13,8 @@ module.exports = {
   entry: './src/index.js',
   output: {
     path: path.resolve(__dirname, 'dist'),
-    filename: 'playkit-js-annoto.js',
-    library: 'playkitJsAnnoto',
+    filename: 'playkit-plugin-loader.js',
+    library: 'playkitPluginLoader',
     libraryTarget: 'umd',
     globalObject: 'this'
   },

@@ -1,4 +1,4 @@
-# playkit-js-annoto
+# playkit-plugin-loader
 
 A **thin Kaltura Player v7 (Playkit) wrapper plugin** that loads the Annoto
 plugin so Annoto can be enabled through a Kaltura **uiConf** — including the
@@ -37,7 +37,7 @@ advanced settings) — no host-page JavaScript:
 
 ```js
 plugins: {
-  annotoLoader: {
+  'annoto-loader': {
     clientId: 'eyJhbGciOiJIUzI1NiJ9...', // Annoto API key (JWT) — required
     region: 'eu'                         // 'eu' | 'us' | 'staging' (optional)
     // theme: 'dark'                     // optional per-embed override
@@ -45,7 +45,7 @@ plugins: {
 }
 ```
 
-The plugin is named **`annotoLoader`** (not `annoto`) on purpose, to avoid a
+The plugin is named **`annoto-loader`** (not `annoto`) on purpose, to avoid a
 registration clash with the `annoto` plugin that `plugin.js` may register at
 runtime. If Annoto/Kaltura adopt this wrapper directly, the name can become
 `annoto`.
@@ -57,7 +57,7 @@ This is the part Muli couldn't do without a working API key.
 1. Serve this folder on port 8080 (the demo uses `:8080` by convention):
 
    ```bash
-   cd playkit-js-annoto
+   cd playkit-plugin-loader
    npx http-server -p 8080 -c-1 .
    # or: python3 -m http.server 8080
    ```
@@ -69,7 +69,7 @@ This is the part Muli couldn't do without a working API key.
    them with your own to test against your account.
 
 4. Click **Load player + Annoto**. The page sets up the Kaltura v7 player with
-   `plugins: { annotoLoader: { clientId } }` and **no Annoto script on the page** —
+   `plugins: { 'annoto-loader': { clientId } }` and **no Annoto script on the page** —
    exactly how a uiConf-bundled plugin behaves. Confirm the Annoto widget loads
    and is functional (open comments, post anonymously, etc.).
 
@@ -85,10 +85,10 @@ uiConf bundle:
 
    ```bash
    npm install
-   npm run build      # -> dist/playkit-js-annoto.js
+   npm run build      # -> dist/playkit-plugin-loader.js
    ```
 
-2. Host `dist/playkit-js-annoto.js` on a public HTTPS URL (any CDN).
+2. Host `dist/playkit-plugin-loader.js` on a public HTTPS URL (any CDN).
 
 3. Add it to a v7 player in **Player Studio** (steps below).
 
@@ -110,12 +110,12 @@ This is the part you can do yourself today.
    name.
 2. Open the player's **config / advanced settings** (the raw uiConf JSON editor —
    in the left sidebar, the option that lets you edit the player config file).
-3. Add an `annotoLoader` entry to the `plugins` object:
+3. Add an `annoto-loader` entry to the `plugins` object:
 
    ```json
    {
      "plugins": {
-       "annotoLoader": {
+       "annoto-loader": {
          "clientId": "eyJhbGciOiJIUzI1NiJ9...",
          "region": "eu"
        }
@@ -130,7 +130,7 @@ This is the part you can do yourself today.
 ### B. Get the plugin code loaded with the player
 
 Configuration alone (step A) only tells the player *how* to configure
-`annotoLoader` — the player also has to actually *load* the plugin code. There
+`annoto-loader` — the player also has to actually *load* the plugin code. There
 are two ways, depending on your Kaltura setup:
 
 - **Kaltura SaaS (cloud KMC):** the v7 bundler only includes plugins Kaltura has
@@ -138,10 +138,10 @@ are two ways, depending on your Kaltura setup:
   the iframe build automatically. To enable the true IFrame embed on SaaS, ask
   Kaltura (via your account manager / Kaltura PS) to **whitelist and include this
   plugin** in the player bundler, pointing at your hosted
-  `dist/playkit-js-annoto.js`. This is the same "whitelist Annoto" ask raised in
+  `dist/playkit-plugin-loader.js`. This is the same "whitelist Annoto" ask raised in
   the original thread — this repo is the artifact that request points to.
 - **Self-hosted / on-prem Kaltura:** add the plugin to your player **bundler
-  config** so `dist/playkit-js-annoto.js` is built into the uiConf bundle. Once
+  config** so `dist/playkit-plugin-loader.js` is built into the uiConf bundle. Once
   it's in the bundle, the IFrame embed works with no host-page script.
 
 > Until B is done on SaaS, you can still ship Annoto on every embed type **except
@@ -172,8 +172,8 @@ suggested) or Annoto's org.
 
 ```
 src/annoto.js        Plugin class (loads plugin.js, sets auto-boot globals)
-src/index.js         Registers the plugin as `annotoLoader`
-webpack.config.js    Builds dist/playkit-js-annoto.js (UMD) for uiConf bundling
+src/index.js         Registers the plugin as `annoto-loader`
+webpack.config.js    Builds dist/playkit-plugin-loader.js (UMD) for uiConf bundling
 demo/index.html      Zero-build localhost:8080 test page
 ```
 
