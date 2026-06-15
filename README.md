@@ -70,13 +70,41 @@ npm run prettier     # format
 npm run clean        # remove dist/ and lib/
 ```
 
+## How to test it
+
+The quickest way to check the plugin works — **no build or `npm install` needed**.
+This uses the self-contained interactive page at `demo/tester.html`.
+
+1. Open a terminal and start a static server on the `demo` folder:
+
+   ```sh
+   cd playkit-plugin-loader
+   npx http-server demo -p 8080
+   ```
+
+   (If it asks to install `http-server`, accept. No-Node alternative:
+   `python3 -m http.server 8080 --directory demo`.)
+
+2. Open this URL in your browser:
+
+   **<http://localhost:8080/tester.html>**
+
+3. Paste your **Annoto API key** into the *clientId* field. The Kaltura
+   partner/uiConf/entry fields are pre-filled with Annoto's test player — replace
+   them with your own to test your account.
+
+4. Click **Load player + Annoto**. The video player loads and the Annoto panel
+   should appear next to it — with **no Annoto script on the page**, which is
+   exactly how a uiConf-bundled plugin behaves inside the Kaltura IFrame embed.
+
+If the player loads but the Annoto panel doesn't appear, open the browser console
+(it logs whether `plugin.js` loaded) and share the output.
+
 ### Demo pages
 
-- `demo/index.html` — minimal static demo (template style); set your API key in
-  the page source. Served by `npm run serve`.
-- `demo/tester.html` — self-contained interactive tester: fill in your Annoto API
-  key, Kaltura partner/uiConf/entry, and load. No build required — open it via any
-  static server (e.g. `npx http-server demo -p 8080` → `/tester.html`).
+- `demo/tester.html` — the interactive tester used above (fill-in fields, no build).
+- `demo/index.html` — minimal static demo in the Kaltura-PS template style; set
+  your API key in the page source and run `npm run serve`.
 
 ## Kaltura Player Studio (uiConf) setup
 
